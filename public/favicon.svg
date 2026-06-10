@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- 圆角深色底，与页面背景同色系 -->
+  <rect width="64" height="64" rx="14" fill="#161310"/>
+  <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="13.25" fill="none" stroke="#453a26" stroke-width="1.5"/>
+  <!-- 三条「体量占比」色块：绿=system / 蓝=tools / 橙=messages，宽度递增呼应真实占比 -->
+  <g>
+    <rect x="14" y="17" width="22" height="8" rx="4" fill="#88c98b"/>
+    <rect x="14" y="28" width="30" height="8" rx="4" fill="#8fb0dd"/>
+    <rect x="14" y="39" width="36" height="8" rx="4" fill="#e57a4c"/>
+  </g>
+</svg>
