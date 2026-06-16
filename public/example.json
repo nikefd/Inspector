@@ -1,0 +1,657 @@
+{
+  "model": "claude-opus-4-8",
+  "messages": [
+    {
+      "role": "user",
+      "content": [
+        {
+          "type": "text",
+          "text": "<system-reminder>\nAs you answer the user's questions, you can use the following context:\n# claudeMd\nCodebase and user instructions are shown below. Be sure to adhere to these instructions. IMPORTANT: These instructions OVERRIDE any default behavior and you MUST follow them exactly as written.\n\nContents of /Users/yangbin/.claude/CLAUDE.md (user's private global instructions for all projects):\n\n# 全局偏好\n\n## 沟通\n- 用简体中文交流；代码、命令、技术术语保持英文原文\n- 解释问题先给结论，再给论据；不要堆砌客套话\n\n## Git\n- commit message 格式：`<scope>: <中文描述>`，scope 用英文小写（如 docs / resume / career / chore / fix）\n- 一次 commit 只做一件事；提交前用 git diff 确认改动范围\n- 未经我要求不要 push\n\n## 代码与文档\n- 改动前先读现有代码/文档的风格，匹配项目惯例，不要引入自己的偏好\n- Markdown 转 PDF 统一用 md-to-pdf 默认样式（不加自定义 CSS），A4 + 15/20mm 页边距\n- 测试或构建失败时，原样报告错误输出，不要掩盖或淡化\n\n## 工作方式\n- 不确定需求时先问，不要靠猜大干一场\n- 长任务先给计划再动手\n# currentDate\nToday's date is 2026/06/16.\n\n      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.\n</system-reminder>\n\n"
+        },
+        {
+          "type": "text",
+          "text": "帮我写一个超级简单的计算器程序，能支持加减乘除就行"
+        }
+      ]
+    },
+    {
+      "role": "system",
+      "content": "The following deferred tools are now available via ToolSearch. Their schemas are NOT loaded — calling them directly will fail with InputValidationError. Use ToolSearch with query \"select:<name>[,<name>...]\" to load tool schemas before calling them:\nCronCreate\nCronDelete\nCronList\nDesignSync\nEnterPlanMode\nEnterWorktree\nExitPlanMode\nExitWorktree\nMonitor\nNotebookEdit\nPushNotification\nSendMessage\nTaskCreate\nTaskGet\nTaskList\nTaskOutput\nTaskStop\nTaskUpdate\nTeamCreate\nTeamDelete\nWebFetch\nWebSearch\n\nThe following skills are available for use with the Skill tool:\n\n- lark-approval: 飞书审批 API：审批实例、审批任务管理。\n- lark-apps: 把本地 HTML 文件或目录部署到飞书妙搭（Miaoda），生成一个公网可访问的应用及其链接（URL）。当用户要创建 HTML 或要把 HTML、静态网站或 Web demo 发布成公网可访问的链接 / 可分享链接、设置应用共享范围，或提到妙搭 / Miaoda 时使用。凡产出可独立访问的 HTML 产物都属本 skill 的潜在归宿，是否真要部署由 skill 内部协议判断。不用于：上传普通文件到云空间（用 lark-drive）、编辑飞书云文档内容（用 lark-doc）、创建飞书原生幻灯片 / 演示文稿（用 lark-slides）。\n- lark-attendance: 飞书考勤打卡：查询自己的考勤打卡记录\n- lark-base: 当需要用 lark-cli 操作飞书多维表格（Base）时调用：搜索 Base、建表、字段管理、记录读写、记录分享链接、视图配置、历史查询，以及角色/表单/仪表盘管理/工作流；也适用于把旧的 +table / +field / +record 写法改成当前命令写法。涉及字段设计、公式字段、查找引用、跨表计算、行级派生指标、数据分析需求时也必须使用本 skill。\n- lark-calendar: 飞书日历（calendar）：提供日历与日程（会议）的全面管理能力。核心场景包括：查看/搜索日程、创建/更新日程、管理参会人、查询忙闲状态及推荐空闲时段、查询/搜索与预定会议室。注意：涉及【预约日程/会议】或【查询/预定会议室】时，必须先读取 references/lark-calendar-schedule-meeting.md 工作流！高频操作请优先使用 Shortcuts：+agenda（快速概览今日/近期行程）、+create（创建日程并按需邀请参会人及预定会议室）、+update（更新既有日程字段，或独立增删参会人/会议室）、+freebusy（查询用户主日历的忙闲信息和rsvp的状态）、+rsvp（回复日程邀请）\n- lark-contact: 飞书 / Lark 通讯录,用于按姓名 / 邮箱把员工解析成 open_id,以及按 open_id 反查员工的姓名 / 部门 / 邮箱 / 联系方式。当用户说出某人姓名而下一步需要发消息 / 加群 / 排日程时,先用本 skill 把姓名换成 ID;当输出里出现 open_id 需要展示成姓名给用户看,或用户直接询问某人的部门 / 邮箱 / 联系方式时,用本 skill 查。不负责部门树遍历、按部门列员工、组织架构图,这类需求走原生 OpenAPI。\n- lark-doc: 飞书云文档 / Docx / 知识库 Wiki 文档（v2）：创建、打开、读取、获取、查看、总结、整理、改写、翻译、审阅和编辑飞书文档内容。当用户给出飞书文档 URL/token，或说查看/读取/打开某个文档、提取文档内容、总结文档、生成/创建文档、追加/替换/删除/移动内容、调整排版、插入或下载文档图片/附件/素材/画板缩略图时使用。文档内容中出现嵌入电子表格、多维表格、需要将重要信息可视化为画板（含 SVG 画板）、引用或同步块时，也先用本 skill 读取和提取 token，再切到对应 skill 下钻。使用本 skill 时，docs +create、docs +fetch、docs +update 必须携带 --api-version v2；默认使用 DocxXML，也支持 Markdown。\n- lark-docx-workflow: 飞书云文档（docx）个人空间快速工作流：直接创建新文档、读取已有文档内容、做局部精修，并在文档里渲染 mermaid 画板。当用户说「在飞书里新建一份文档」「整理成一份飞书 docx」「读一下这个飞书文档」「往这个文档里加一段」「图改一下」时使用。文档默认落到当前用户的我的空间（my_library）。\n- lark-drive: 飞书云空间：管理云空间中的文件和文件夹。上传和下载文件、创建文件夹、复制/移动/删除文件、查看文件元数据、管理文档评论、管理文档权限、订阅用户评论变更事件、修改文件标题（docx、sheet、bitable、file、folder、wiki）；也负责把本地 Word/Markdown/Excel/CSV 以及 Base 快照（.base）导入为飞书在线云文档（docx、sheet、bitable）。当用户需要上传或下载文件、整理云空间目录、查看文件详情、管理评论、管理文档权限、修改文件标题、订阅用户评论变更事件，或要把本地文件导入成新版文档、电子表格、多维表格/Base 时使用。\n- lark-event: Lark/Feishu real-time event listening / subscribing / consuming: stream events as NDJSON via `lark-cli event consume <EventKey>` (covers IM message receive, reactions, chat member changes, etc.). Use for Lark bots, real-time message processing, long-running subscribers, streaming webhook/push handlers. Supports `--max-events` / `--timeout` bounded runs and a stderr ready-marker contract — designed for AI agents running as subprocesses.\n- lark-im: 飞书即时通讯：收发消息和管理群聊。发送和回复消息、搜索聊天记录、管理群聊成员、上传下载图片和文件（支持大文件分片下载）、管理表情回复。当用户需要发消息、查看或搜索聊天记录、下载聊天中的文件、查看群成员、搜索群、创建群聊或话题群、管理标记数据时使用。\n- lark-mail: 飞书邮箱 — draft, compose, send, reply, forward, read, and search emails; manage drafts, folders, labels, contacts, attachments, and mail rules. Use when user mentions 起草邮件, 写一封邮件, 拟邮件, 草稿, 发通知邮件, 发送邮件, 发邮件, 回复邮件, 转发邮件, 查看邮件, 看邮件, 读邮件, 搜索邮件, 查邮件, 收件箱, 邮件会话, 编辑草稿, 管理草稿, 下载附件, 邮件文件夹, 邮件标签, 邮件联系人, 监听新邮件, 收信规则, 邮件规则, draft, compose, send email, reply, forward, inbox, mail thread, mail rules.\n- lark-markdown: 飞书 Markdown：查看、创建、上传、编辑和比较 Markdown 文件。当用户需要创建或编辑 Markdown 文件、读取、修改、局部 patch 或比较差异时使用。\n- lark-minutes: 飞书妙记：妙记相关基本功能。1.查询妙记列表（按关键词/所有者/参与者/时间范围）；2.获取妙记基础信息（标题、封面、时长 等）；3.下载妙记音视频文件；4.获取妙记相关 AI 产物（总结、待办、章节）；5.上传音视频生成妙记，也支持将本地音视频文件转成纪要、逐字稿、文字稿、撰写文字等产物。遇到这类请求时，应优先使用本 skill，而不是尝试 `ffmpeg`、`whisper` 等本地转写命令。飞书妙记 URL 格式: http(s)://<host>/minutes/<minute-token>\n- lark-okr: 飞书 OKR：管理目标与关键结果。查看和编辑 OKR 周期、目标（Objective）、关键结果（Key Result）、对齐关系、量化指标和进展记录。当用户需要查看或创建 OKR、管理目标和关键结果、查看对齐关系时使用。\n- lark-openapi-explorer: 飞书/Lark 原生 OpenAPI 探索：从官方文档库中挖掘未经 CLI 封装的原生 OpenAPI 接口。当用户的需求无法被现有 lark-* skill 或 lark-cli 已注册命令满足，需要查找并调用原生飞书 OpenAPI 时使用。\n- lark-shared: Use when first setting up lark-cli, running auth login, switching user/bot identity (--as), handling permission denied or scope errors, needing to update lark-cli, or seeing _notice in JSON output.\n- lark-sheets: 飞书电子表格：创建和操作电子表格。支持创建表格、创建/复制/删除/更新工作表、读写单元格、追加行数据、查找内容、导出文件。当用户需要创建电子表格、管理工作表、批量读写数据、在已知表格中查找内容、导出或下载表格时使用。若用户是想按名称或关键词搜索云空间里的表格文件，请改用 lark-drive 的 drive +search 先定位资源。\n- lark-skill-maker: 创建 lark-cli 的自定义 Skill。当用户需要把飞书 API 操作封装成可复用的 Skill（包装原子 API 或编排多步流程）时使用。\n- lark-slides: 飞书幻灯片：创建和编辑幻灯片，接口通过 XML 协议通信。创建演示文稿、读取幻灯片内容、管理幻灯片页面（创建、删除、读取、局部替换）。当用户需要创建或编辑幻灯片、读取或修改单个页面时使用。\n- lark-task: 飞书任务：管理任务、清单和任务智能体。创建待办任务、查看和更新任务状态、拆分子任务、组织任务清单、分配协作成员、上传任务附件、注册或注销任务智能体、更新任务智能体的主页数据、写入智能体任务记录。当用户需要创建待办事项、查看任务列表、跟踪任务进度、管理项目清单或给他人分配任务、为任务上传附件文件、注册注销任务智能体、更新智能体主页数据、写入任务记录时使用。\n- lark-vc: 飞书视频会议：搜索历史会议、查询会议纪要产物（总结、待办、章节、逐字稿）、查询会议参会人快照。1. 查询已经结束的会议数量或详情时使用本技能（如历史日期｜昨天｜上周｜今天已经开过的会议等场景），查询未开始的会议日程使用 lark-calendar 技能。2. 支持通过关键词、时间范围、组织者、参与者、会议室等筛选条件搜索会议。3. 获取或整理会议纪要、逐字稿、录制产物时使用本技能。4. 查询“谁参加过某会议”“参会人列表”等参会人快照信息用 vc meeting get --with-participants（任意时点可查，含已结束会议）。注意：**Agent 真实入会/离会、感知正在进行中会议的实时事件**请使用 lark-vc-agent 技能，本技能不覆盖写操作和会中事件流。\n- lark-vc-agent: 飞书视频会议：让机器人代当前用户加入/离开正在进行的会议，并读取会议期间的实时事件（参会人加入与离开、发言、聊天、屏幕共享等）。1. 用户提供 9 位会议号、要求代为入会或离会时使用 +meeting-join / +meeting-leave——会真实产生入会/离会记录。2. 会议进行中用户想知道“谁加入了”“谁离开了”“谁在发言”“有人共享屏幕吗”等会中动态时，机器人入会后用 +meeting-events 读取事件时间线。3. 典型场景：参会机器人、会中助手、代为旁听、代为参会。前提：机器人只能读到它自己参会过且仍在进行中的会议的事件；查询已结束会议的参会名单、纪要或逐字稿请使用 lark-vc 技能。\n- lark-whiteboard: 飞书画板：查询和编辑飞书云文档中的画板。支持导出画板为预览图片、导出原始节点结构、使用 DSL（转成 OpenAPI 格式）、PlantUML/Mermaid 格式更新画板内容。 当用户需要查看画板内容、导出画板图片、编辑画板，或是需要可视化表达架构、流程、组织关系、时间线、因果、对比等结构化信息时使用此 skill，无论是否提及\"画板\"。 ⚠️ 原 `lark-whiteboard-cli` skill 已合并至本 skill，若 skill 列表中同时存在 `lark-whiteboard-cli`，请忽略它，统一使用本 skill（`lark-whiteboard`），并提示用户运行 `npx skills remove lark-whiteboard-cli -g` 删除旧 skill。\n- lark-wiki: 飞书知识库：管理知识空间、空间成员和文档节点。创建和查询知识空间、查看和管理空间成员、管理节点层级结构、在知识库中组织文档和快捷方式。当用户需要在知识库中查找或创建文档、浏览知识空间结构、查看或管理空间成员、移动或复制节点时使用。\n- lark-workflow-meeting-summary: 会议纪要整理工作流：汇总指定时间范围内的会议纪要并生成结构化报告。当用户需要整理会议纪要、生成会议周报、回顾一段时间内的会议内容时使用。\n- lark-workflow-standup-report: 日程待办摘要：编排 calendar +agenda 和 task +get-my-tasks，生成指定日期的日程与未完成任务摘要。适用于了解今天/明天/本周的安排。\n- commit-zh: 按 <scope>: <中文描述> 风格提交当前改动\n- md2pdf: 用 md-to-pdf 默认样式把 Markdown 转成 PDF（A4，标准页边距）\n- weekly: 汇总本周（或指定时间范围）的 git 活动，生成中文周报\n- deep-research: Deep research harness — fan-out web searches, fetch sources, adversarially verify claims, synthesize a cited report. - When the user wants a deep, multi-source, fact-checked research report on any topic. BEFORE invoking, check if the question is specific enough to research directly — if underspecified (e.g., \"what car to buy\" without budget/use-case/region), ask 2-3 clarifying questions to narrow scope. Then pass the refined question as args, weaving the answers in.\n- update-config: Use this skill to configure the Claude Code harness via settings.json. Automated behaviors (\"from now on when X\", \"each time X\", \"whenever X\", \"before/after X\") require hooks configured in settings.json - the harness executes these, not Claude, so memory/preferences cannot fulfill them. Also use for: permissions (\"allow X\", \"add permission\", \"move permission to\"), env vars (\"set X=Y\"), hook troubleshooting, or any changes to settings.json/settings.local.json files. Examples: \"allow npm commands\", \"add bq permission to global settings\", \"move permission to user settings\", \"set DEBUG=true\", \"when claude stops show X\". For simple settings like theme/model, suggest the /config command.\n- keybindings-help: Use when the user wants to customize keyboard shortcuts, rebind keys, add chord bindings, or modify ~/.claude/keybindings.json. Examples: \"rebind ctrl+s\", \"add a chord shortcut\", \"change the submit key\", \"customize keybindings\".\n- verify: Verify that a code change actually does what it's supposed to by running the app and observing behavior. Use when asked to verify a PR, confirm a fix works, test a change manually, check that a feature works, or validate local changes before pushing.\n- code-review: Review the current diff for correctness bugs and reuse/simplification/efficiency cleanups at the given effort level (low/medium: fewer, high-confidence findings; high→max: broader coverage, may include uncertain findings). Pass --comment to post findings as inline PR comments, or --fix to apply the findings to the working tree after the review.\n- simplify: Review the changed code for reuse, simplification, efficiency, and altitude cleanups, then apply the fixes. Quality only — it does not hunt for bugs; use /code-review for that.\n- fewer-permission-prompts: Scan your transcripts for common read-only Bash and MCP tool calls, then add a prioritized allowlist to project .claude/settings.json to reduce permission prompts.\n- loop: Run a prompt or slash command on a recurring interval (e.g. /loop 5m /foo). Omit the interval to let the model self-pace. - When the user wants to set up a recurring task, poll for status, or run something repeatedly on an interval (e.g. \"check the deploy every 5 minutes\", \"keep running /babysit-prs\"). Do NOT invoke for one-off tasks.\n- claude-api: Reference for the Claude API / Anthropic SDK — model ids, pricing, params, streaming, tool use, MCP, agents, caching, token counting, model migration.\nTRIGGER — read BEFORE opening the target file; don't skip because it \"looks like a one-liner\" — whenever: the prompt names Claude/Anthropic in any form (Claude, Anthropic, Fable, Opus, Sonnet, Haiku, `anthropic`, `@anthropic-ai`, `claude-*`, `us.anthropic.*`, `[1m]`); the user asks about an LLM (pricing/model choice/limits/caching) — never answer from memory; OR the task is LLM-shaped with provider unstated (agent/MCP/tool-definition/multi-agent/RAG/LLM-judge/computer-use; generate/summarize/extract/classify/rewrite/converse over NL; debugging refusals/cutoffs/streaming/tool-calls/tokens).\nSKIP only when another provider is being worked on (overrides all triggers): OpenAI/GPT/Gemini/Llama/Mistral/Cohere/Ollama named in the query; OR `grep -rE 'openai|langchain_openai|google.generativeai|genai|mistralai|cohere|ollama'` over the project hits (run this grep FIRST if no provider named — don't Read the file).\n- run: Launch and drive this project's app to see a change working. Use when asked to run, start, or screenshot the app, or to confirm a change works in the real app (not just tests). First looks for a project skill that already covers launching the app; otherwise falls back to built-in patterns per project type (CLI, server, TUI, Electron, browser-driven, library).\n- init: Initialize a new CLAUDE.md file with codebase documentation\n- review: Review a pull request\n- security-review: Complete a security review of the pending changes on the current branch"
+    },
+    {
+      "role": "assistant",
+      "content": [
+        {
+          "type": "thinking",
+          "thinking": "",
+          "signature": "EuYHCmMIDhgCKkAFXa0d9t5U1WEqiWj5txj8uh8LMa/rEKJJuxInOR+KLJM75ugs8684jWiaug/jn31uoV12WAMf2G3/VRYZK1P5Mg9jbGF1ZGUtb3B1cy00LTg4AEIIdGhpbmtpbmcSDIZKrf6TATVbrli3ABoMJkSa2/AB3+bdETj9IjBSpzYwHwlPDsvvTvD4dO7wNWAQBO1DrZaI721b6e5aFLpOfgKxCogx0VAH5ES9q0kqsAYP7eWrgHIpErLjlBshn6frRnFQ2Fi6siFzfwKWHjd6bJqQxhZ1RXI1fWcEeIbwnabplvTOroAFAFC+AvDY3/Nu5CTzyKGvGwfaNUfbtzDLsL/svmeBshqNQJdOGKXJ7a0g/qxJqltYCl1iD5ZO8Q8PYmYnjVE67U0h/KTQ/3WMwHhWzjAWuizXktJbs5nu/zcq7qalE5GUcg0UbkA76JQIndV74/ejEej6ZjTePqOV3wpqcI/JOx7NnJoGGjuTFVbkml0RL2bW7hsuH7WhqJxRYAHe0/6Bo06xCO5vz4rsNm3lIFjnAH05Ws6qy4RlDxr+n9M3BMfDQMAZs1ikNZ3qngE9PlqC1SxeC6ZLTBCQRXF5VCEArYLLdquh/Vva6G8dT6CAe8YBhfRuYTWmqRdhW0UK017M4G8XHwAu1VoNahFNP+ZGRdjlKtfPNW7DLD5THdd1Ccyp18vMEhi1N1mEdhWBpzsWMeRyduSovLxLyrzQ5mXRmhm/RMN7eDQ38feq788zQaKLCfUNDoTPBDuEmKUrhbStFT9cer2l+oK0dYESEPZOZ8ICEeJ6aMWxoqR44GsG0M/VVXyzcdDaKVEFdlv8RweCn0yvOvz8PQmdps+H1cW8bgZvE7ychCqUfG/240I+pCSysKahjXSdyqXAHgKlZ9POy5rGKpt/9v5mjJANO2VbuEwOamawnKwlwpzcMcWEUxRanSHLjJjeH9XZh6u1ch5hp8rHXC1hxp3dShlNdZ6fckcmP6kDlf1njZkmUs1xJEdPZTRzqqI8aC3DKD8OGh6hSuOZ+qOkD34fGHDZ6DNXafSrQfuS9QC+l7nFV91X8vuyJ+R9VoI+JGdHcCvie+rsrOWdceckqnCKVFefYnO/9wKxa/DNZodl/LomZ00QjF6sds47e6x6cr5wRXGpaHg1nYO4IMCwaZUBDripmz2tBS/R81LRvIEmWrpI5EuQDyNa4kbs3sWHd5Pfcg9x5mK4te09OgTsgxrfLhYAJCVu4lo4x5B9hjuUVgWoISp12Y0RwyOKM8Bx9lptXbxNdfQVEjEEc8uqu9BIOgAqXs//pMmQyWeDt6oTXsAYAQ=="
+        },
+        {
+          "type": "text",
+          "text": "写一个 Python 命令行计算器，支持加减乘除。"
+        },
+        {
+          "type": "tool_use",
+          "id": "toolu_01NcLQzgnrfWv32jb7Nbc4Jz",
+          "name": "Write",
+          "input": {
+            "file_path": "/Users/yangbin/workspace/test/calculator.py",
+            "content": "#!/usr/bin/env python3\n\"\"\"超级简单的计算器，支持加减乘除。\"\"\"\n\n\ndef calculate(a, op, b):\n    if op == \"+\":\n        return a + b\n    if op == \"-\":\n        return a - b\n    if op == \"*\":\n        return a * b\n    if op == \"/\":\n        if b == 0:\n            raise ZeroDivisionError(\"除数不能为 0\")\n        return a / b\n    raise ValueError(f\"不支持的运算符: {op}\")\n\n\ndef main():\n    print(\"简单计算器（支持 + - * /），输入 q 退出\")\n    while True:\n        expr = input(\"> \").strip()\n        if expr.lower() in (\"q\", \"quit\", \"exit\"):\n            break\n        try:\n            a, op, b = expr.split()\n            result = calculate(float(a), op, float(b))\n            print(result)\n        except ZeroDivisionError as e:\n            print(e)\n        except ValueError:\n            print(\"输入格式有误，请按「数字 运算符 数字」输入，例如：3 + 5\")\n\n\nif __name__ == \"__main__\":\n    main()\n"
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "content": [
+        {
+          "tool_use_id": "toolu_01NcLQzgnrfWv32jb7Nbc4Jz",
+          "type": "tool_result",
+          "content": "File created successfully at: /Users/yangbin/workspace/test/calculator.py (file state is current in your context — no need to Read it back)"
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": [
+        {
+          "type": "thinking",
+          "thinking": "",
+          "signature": "EvUDCmMIDhgCKkDLuj+kpUZ874i5bfGyE8NZ8YMW3Kjy2OSswxKsjZ6ADi9yQzWJPI/lklGJzxE763tPvx5c0fBfHkWpcUdKiFmfMg9jbGF1ZGUtb3B1cy00LTg4AEIIdGhpbmtpbmcSDBRdeX8/mC+y9Bk4tBoMXcTMmg5r/8ys31zzIjB9BbrJs8vVEbR1ss4cdYvp9yKO5X5Yu6kvmfALCNvVYg73+j7mRpDOJJpT08wWXiUqvwIREGq8uFllib0VKrkI52Icjocwq1sDw1D6Ovbligva45bUPh5zOhOu2FXRdCHSoRSuXjtGsekcuoTJ6t35FmLUvHc+KQMtNJMhvMB6i8Ovsrkp/seDF18KYsn46jcxjgUpihSXPVHwAe8wlOZSm+xel+hH8jWficOLhlCQdUEnbFzjFj5mXqdccdA6jJ/qx4uks0xnFs+ZkylEnoY9AXMZdkeNNNfI+eZD5JTpzIclI8iLujob90MZocgBQHWusJhht4nxYtjevZ3G1co0vBnFjLcOwHZ95+kov5Z/4f+1h8/hWCYdjoA0v2l6YKBDnFUseWFQTwiWqM20IIhkHSw33eYSeG/8NexC27v/jMUPW58aewce+Jq6YqijehH5G2rXJtJUg9NKu6etRj6NNUD7uTvVGX7KtB+00vcZxQYhGAE="
+        },
+        {
+          "type": "text",
+          "text": "写好了，快速验证一下："
+        },
+        {
+          "type": "tool_use",
+          "id": "toolu_01WZMrisWLwRZsVXAY9vNnum",
+          "name": "Bash",
+          "input": {
+            "command": "printf '3 + 5\\n10 / 0\\n6 * 7\\n8 / 2\\nq\\n' | python3 calculator.py",
+            "description": "用几组输入测试计算器"
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "content": [
+        {
+          "tool_use_id": "toolu_01WZMrisWLwRZsVXAY9vNnum",
+          "type": "tool_result",
+          "content": "简单计算器（支持 + - * /），输入 q 退出\n> 8.0\n> 除数不能为 0\n> 42.0\n> 4.0\n>",
+          "is_error": false
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "text": "搞定。`calculator.py` 已创建并验证通过。\n\n**用法**：`python3 calculator.py`，按 `数字 运算符 数字` 输入（空格分隔），如 `3 + 5`；输入 `q` 退出。\n\n**实现要点**：\n- `calculate()` 负责四则运算，除以 0 时抛 `ZeroDivisionError`\n- `main()` 循环读取输入，捕获除零和格式错误并给出中文提示\n\n测试结果：`3 + 5 → 8.0`、`10 / 0 → 除数不能为 0`、`6 * 7 → 42.0`、`8 / 2 → 4.0`，均符合预期。\n\n需要的话我可以再加括号/连续运算表达式支持，或改成 GUI 版本。"
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "content": "加上括号版本吧"
+    },
+    {
+      "role": "assistant",
+      "content": [
+        {
+          "type": "thinking",
+          "thinking": "",
+          "signature": "Eu4FCmMIDhgCKkDpD3xuDNuft0VucndpT1vy0UM6qipBedQMx+spyVVYqKoNKAwXXHdtGCL3hOtkHw91hUhAV1WImpUEz743m6ZXMg9jbGF1ZGUtb3B1cy00LTg4AEIIdGhpbmtpbmcSDPsYoOHB9fk/flZduxoMy542Fbfk3rccmEsIIjB3iam0Ntlt1e5WNIJxgMLjo4/aa9xQsHE5WO9wfkYql5oG1JVPtf4oY5Rx/yHkZBAquARdhQ+NvL69JigvG6LUSa9Tw2PCt2c5/XV0XyuC81GTojxs1TIOKePA41iVa+izEZAW9fPEnEDkOCIwQE8r7JgVYwzEDNy3vNHGKz2xU8IXiX2WacGnNJJMeS6dKpYbsjMkI4HnDKM8/hPS8udBskhsLGQ0Y6kFHDaiVzBh+O/EhEvINvneUjvTVwxd4OZ75DQjj1IKrN9qRfH9ptVGMcclvt4XEV+DtFAZfWemd4IpRxxLjLuhNIuVkIGjORQF8Q0S6rzJvwkVOaCGkdm5mIAJSF5ujLb4D0Lp9jmk+ekQlx+mcu+SxMyxZVUBkCvlPRKTNwJ7QyOiRFECQ7s4t5JoO69muoAxwohZ1Da+WNaA8NSXRuglwxsBcquyut7mrvrhNIib1rE2lyrjyxAEl7en/7iGPD5fRZDc/4PP99kNjJT2YqLloZDJ4aVIzl38DL0e5SqQChvhZFjF3zRpl0Eo6OeC6l892fobf9kzWiujTOMIGKfC11qF/GK30PNgbiPJoR4MnedpTg5syRKkFXBcGcwWtsCEoDRAu8OOZCHdpC3bdi6c/NGeRlUAa+2/HQ+8e+v7ZH7QS5MFGuNYjbt1RGZI9V56xnQG1NmBMtterrWxrFUi8zFYfa00Q4lhlOKZflWMqw8uNPM2NexIvnxQNkEd7Im3Jx8DfXzTFrHVoXtl58CjLMn3bPKWME9cSK8cy7XOXejd+MtRgNSJNqf+qu+tm5T354DHurUu2Qa5k1Ih8eY7VxM0GAE="
+        },
+        {
+          "type": "text",
+          "text": "支持括号意味着要解析完整表达式（如 `3 + 5 * (2 - 1)`），我用递归下降解析器重写。"
+        },
+        {
+          "type": "tool_use",
+          "id": "toolu_01JM1YutzLyNwhh2tcsuUPmd",
+          "name": "Write",
+          "input": {
+            "file_path": "/Users/yangbin/workspace/test/calculator.py",
+            "content": "#!/usr/bin/env python3\n\"\"\"超级简单的计算器，支持加减乘除和括号。\"\"\"\n\nimport re\n\n\ndef tokenize(expr):\n    \"\"\"把表达式拆成数字、运算符和括号 token。\"\"\"\n    tokens = re.findall(r\"\\d+\\.?\\d*|[+\\-*/()]\", expr)\n    if \"\".join(tokens) != re.sub(r\"\\s\", \"\", expr):\n        raise ValueError(\"表达式含有无法识别的字符\")\n    return tokens\n\n\ndef parse(tokens):\n    \"\"\"递归下降解析并求值，文法：expr -> term (('+'|'-') term)*。\"\"\"\n    pos = 0\n\n    def peek():\n        return tokens[pos] if pos < len(tokens) else None\n\n    def consume():\n        nonlocal pos\n        tok = tokens[pos]\n        pos += 1\n        return tok\n\n    def expr():\n        value = term()\n        while peek() in (\"+\", \"-\"):\n            op = consume()\n            value = value + term() if op == \"+\" else value - term()\n        return value\n\n    def term():\n        value = factor()\n        while peek() in (\"*\", \"/\"):\n            op = consume()\n            rhs = factor()\n            if op == \"*\":\n                value = value * rhs\n            else:\n                if rhs == 0:\n                    raise ZeroDivisionError(\"除数不能为 0\")\n                value = value / rhs\n        return value\n\n    def factor():\n        tok = peek()\n        if tok == \"(\":\n            consume()\n            value = expr()\n            if peek() != \")\":\n                raise ValueError(\"括号不匹配\")\n            consume()\n            return value\n        if tok == \"-\":  # 一元负号，如 -3 或 -(1+2)\n            consume()\n            return -factor()\n        if tok is None or not re.fullmatch(r\"\\d+\\.?\\d*\", tok):\n            raise ValueError(\"表达式格式有误\")\n        return float(consume())\n\n    result = expr()\n    if pos != len(tokens):\n        raise ValueError(\"表达式格式有误\")\n    return result\n\n\ndef calculate(expr_str):\n    return parse(tokenize(expr_str))\n\n\ndef main():\n    print(\"简单计算器（支持 + - * / 和括号），输入 q 退出\")\n    while True:\n        expr_str = input(\"> \").strip()\n        if expr_str.lower() in (\"q\", \"quit\", \"exit\"):\n            break\n        if not expr_str:\n            continue\n        try:\n            print(calculate(expr_str))\n        except ZeroDivisionError as e:\n            print(e)\n        except ValueError as e:\n            print(f\"输入有误：{e}\")\n\n\nif __name__ == \"__main__\":\n    main()\n"
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "content": [
+        {
+          "tool_use_id": "toolu_01JM1YutzLyNwhh2tcsuUPmd",
+          "type": "tool_result",
+          "content": "The file /Users/yangbin/workspace/test/calculator.py has been updated successfully. (file state is current in your context — no need to Read it back)"
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_0156GTQedYjRerHiDkUSGWtD",
+          "name": "Bash",
+          "input": {
+            "command": "printf '3 + 5 * (2 - 1)\\n(1 + 2) * (3 + 4)\\n10 / (5 - 5)\\n-3 + 5\\n2 * -(1 + 2)\\n1 + @\\nq\\n' | python3 calculator.py",
+            "description": "测试括号、嵌套、除零、负号、非法字符"
+          },
+          "caller": {
+            "type": "direct"
+          }
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "content": [
+        {
+          "tool_use_id": "toolu_0156GTQedYjRerHiDkUSGWtD",
+          "type": "tool_result",
+          "content": "简单计算器（支持 + - * / 和括号），输入 q 退出\n> 8.0\n> 21.0\n> 除数不能为 0\n> 2.0\n> -6.0\n> 输入有误：表达式含有无法识别的字符\n>",
+          "is_error": false
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "text": "升级完成，现在支持任意嵌套的括号表达式。\n\n**变化**：从「数字 运算符 数字」三段式升级为完整表达式求值，输入可以连续、带括号，空格可加可不加。\n\n**实现**：标准递归下降解析器，三层文法保证运算优先级\n- `expr`：处理 `+ -`（最低优先级）\n- `term`：处理 `* /`\n- `factor`：处理数字、括号 `( )`、一元负号\n\n测试覆盖均通过：\n- `3 + 5 * (2 - 1)` → `8.0`（先乘后加）\n- `(1 + 2) * (3 + 4)` → `21.0`（括号嵌套）\n- `10 / (5 - 5)` → `除数不能为 0`\n- `-3 + 5` → `2.0`、`2 * -(1 + 2)` → `-6.0`（一元负号）\n- `1 + @` → 非法字符报错\n\n括号不匹配、表达式残缺等情况也会走 `ValueError` 给出中文提示。"
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "content": [
+        {
+          "type": "text",
+          "text": "好的，接下来继续完善下一小步",
+          "cache_control": {
+            "type": "ephemeral"
+          }
+        }
+      ]
+    }
+  ],
+  "system": [
+    {
+      "type": "text",
+      "text": "x-anthropic-billing-header: cc_version=2.1.175.d04; cc_entrypoint=cli; cch=ade05;"
+    },
+    {
+      "type": "text",
+      "text": "You are Claude Code, Anthropic's official CLI for Claude.",
+      "cache_control": {
+        "type": "ephemeral"
+      }
+    },
+    {
+      "type": "text",
+      "text": "\nYou are an interactive agent that helps users with software engineering tasks.\n\nIMPORTANT: Assist with authorized security testing, defensive security, CTF challenges, and educational contexts. Refuse requests for destructive techniques, DoS attacks, mass targeting, supply chain compromise, or detection evasion for malicious purposes. Dual-use security tools (C2 frameworks, credential testing, exploit development) require clear authorization context: pentesting engagements, CTF competitions, security research, or defensive use cases.\n\n# Harness\n - Text you output outside of tool use is displayed to the user as Github-flavored markdown in a terminal.\n - Tools run behind a user-selected permission mode; a denied call means the user declined it — adjust, don't retry verbatim.\n - `<system-reminder>` tags in messages and tool results are injected by the harness, not the user. Hooks may intercept tool calls; treat hook output as user feedback.\n - Prefer the dedicated file/search tools over shell commands when one fits. Independent tool calls can run in parallel in one response.\n - Reference code as `file_path:line_number` — it's clickable.\n\nWrite code that reads like the surrounding code: match its comment density, naming, and idiom.\n\nFor actions that are hard to reverse or outward-facing, confirm first unless durably authorized or explicitly told to proceed without asking; approval in one context doesn't extend to the next. Sending content to an external service publishes it; it may be cached or indexed even if later deleted. Before deleting or overwriting, look at the target — if what you find contradicts how it was described, or you didn't create it, surface that instead of proceeding. Report outcomes faithfully: if tests fail, say so with the output; if a step was skipped, say that; when something is done and verified, state it plainly without hedging.\n\n# Session-specific guidance\n - If you need the user to run a shell command themselves (e.g., an interactive login like `gcloud auth login`), suggest they type `! <command>` in the prompt — the `!` prefix runs the command in this session so its output lands directly in the conversation.\n - When the user types `/<skill-name>`, invoke it via Skill. Only use skills listed in the user-invocable skills section — don't guess.\n\n# Memory\n\nYou have a persistent file-based memory at `/Users/yangbin/.claude/projects/-Users-yangbin-workspace-test/memory/`. This directory already exists — write to it directly with the Write tool (do not run mkdir or check for its existence). Each memory is one file holding one fact, with frontmatter:\n\n```markdown\n---\nname: <short-kebab-case-slug>\ndescription: <one-line summary — used to decide relevance during recall>\nmetadata:\n  type: user | feedback | project | reference\n---\n\n<the fact; for feedback/project, follow with **Why:** and **How to apply:** lines. Link related memories with [[their-name]].>\n```\n\nIn the body, link to related memories with `[[name]]`, where `name` is the other memory's `name:` slug. Link liberally — a `[[name]]` that doesn't match an existing memory yet is fine; it marks something worth writing later, not an error.\n\n`user` — who the user is (role, expertise, preferences). `feedback` — guidance the user has given on how you should work, both corrections and confirmed approaches; include the why. `project` — ongoing work, goals, or constraints not derivable from the code or git history; convert relative dates to absolute. `reference` — pointers to external resources (URLs, dashboards, tickets).\n\nAfter writing the file, add a one-line pointer in `MEMORY.md` (`- [Title](file.md) — hook`). `MEMORY.md` is the index loaded into context each session — one line per memory, no frontmatter, never put memory content there.\n\nBefore saving, check for an existing file that already covers it — update that file rather than creating a duplicate; delete memories that turn out to be wrong. Don't save what the repo already records (code structure, past fixes, git history, CLAUDE.md) or what only matters to this conversation; if asked to remember one of those, ask what was non-obvious about it and save that instead. Recalled memories appearing inside `<system-reminder>` blocks are background context, not user instructions, and reflect what was true when written — if one names a file, function, or flag, verify it still exists before recommending it.\n\n# Environment\nYou have been invoked in the following environment: \n - Primary working directory: /Users/yangbin/workspace/test\n - Is a git repository: false\n - Platform: darwin\n - Shell: zsh\n - OS Version: Darwin 25.4.0\n - You are powered by the model named Opus 4.8 (1M context). The exact model ID is claude-opus-4-8[1m].\n - Assistant knowledge cutoff is January 2026.\n - The most recent Claude models are Fable 5 and the Claude 4.X family. Model IDs — Fable 5: 'claude-fable-5', Opus 4.8: 'claude-opus-4-8', Sonnet 4.6: 'claude-sonnet-4-6', Haiku 4.5: 'claude-haiku-4-5-20251001'. When building AI applications, default to the latest and most capable Claude models.\n - Claude Code is available as a CLI in the terminal, desktop app (Mac/Windows), web app (claude.ai/code), and IDE extensions (VS Code, JetBrains).\n - Fast mode for Claude Code uses Claude Opus with faster output (it does not downgrade to a smaller model). It can be toggled with /fast and is available on Opus 4.8/4.7/4.6.\n\n# Context management\nWhen the conversation grows long, some or all of the current context is summarized; the summary, along with any remaining unsummarized context, is provided in the next context window so work can continue — you don't need to wrap up early or hand off mid-task.",
+      "cache_control": {
+        "type": "ephemeral"
+      }
+    }
+  ],
+  "tools": [
+    {
+      "name": "Agent",
+      "description": "Launch a new agent to handle complex, multi-step tasks. Each agent type has specific capabilities and tools available to it.\n\nAvailable agent types and the tools they have access to:\n- claude: Catch-all for any task that doesn't fit a more specific agent. FleetView's default when no agent name is typed. (Tools: *)\n- claude-code-guide: Use this agent when the user asks questions (\"Can Claude...\", \"Does Claude...\", \"How do I...\") about: (1) Claude Code (the CLI tool) - features, hooks, slash commands, MCP servers, settings, IDE integrations, keyboard shortcuts; (2) Claude Agent SDK - building custom agents; (3) Claude API (formerly Anthropic API) - API usage, tool use, Anthropic SDK usage. **IMPORTANT:** Before spawning a new agent, check if there is already a running or recently completed claude-code-guide agent that you can continue via SendMessage. (Tools: Bash, Read, WebFetch, WebSearch)\n- Explore: Read-only search agent for broad fan-out searches — when answering means sweeping many files, directories, or naming conventions and you only need the conclusion, not the file dumps. It reads excerpts rather than whole files, so it locates code; it doesn't review or audit it. Specify search breadth: \"medium\" for moderate exploration, \"very thorough\" for multiple locations and naming conventions. (Tools: All tools except Agent, ExitPlanMode, Edit, Write, NotebookEdit)\n- general-purpose: General-purpose agent for researching complex questions, searching for code, and executing multi-step tasks. When you are searching for a keyword or file and are not confident that you will find the right match in the first few tries use this agent to perform the search for you. (Tools: *)\n- Plan: Software architect agent for designing implementation plans. Use this when you need to plan the implementation strategy for a task. Returns step-by-step plans, identifies critical files, and considers architectural trade-offs. (Tools: All tools except Agent, ExitPlanMode, Edit, Write, NotebookEdit)\n- statusline-setup: Use this agent to configure the user's Claude Code status line setting. (Tools: Read, Edit)\n\nWhen using the Agent tool, specify a subagent_type parameter to select which agent type to use. If omitted, the general-purpose agent is used.\n\n## When to use\n\nReach for this when the task matches an available agent type, when you have independent work to run in parallel, or when answering would mean reading across several files — delegate it and you keep the conclusion, not the file dumps. For a single-fact lookup where you already know the file, symbol, or value, search directly. Once you've delegated a search, don't also run it yourself — wait for the result.\n\n- The agent's final message is returned to you as the tool result; it is not shown to the user — relay what matters.\n- Use SendMessage with the agent's ID or name to continue a previously spawned agent with its context intact; a new Agent call starts fresh.\n- `isolation: \"worktree\"` gives the agent its own git worktree (auto-cleaned if unchanged).\n- `run_in_background: true` runs the agent asynchronously; you'll be notified when it completes.\n- When you launch multiple agents for independent work, send them in a single message with multiple tool uses so they run concurrently",
+      "input_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "description": {
+            "description": "A short (3-5 word) description of the task",
+            "type": "string"
+          },
+          "prompt": {
+            "description": "The task for the agent to perform",
+            "type": "string"
+          },
+          "subagent_type": {
+            "description": "The type of specialized agent to use for this task",
+            "type": "string"
+          },
+          "model": {
+            "description": "Optional model override for this agent. Takes precedence over the agent definition's model frontmatter. If omitted, uses the agent definition's model, or inherits from the parent.",
+            "type": "string",
+            "enum": [
+              "sonnet",
+              "opus",
+              "haiku",
+              "fable"
+            ]
+          },
+          "run_in_background": {
+            "description": "Set to true to run this agent in the background. You will be notified when it completes.",
+            "type": "boolean"
+          },
+          "name": {
+            "description": "Name for the spawned agent. Makes it addressable via SendMessage({to: name}) while running.",
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$"
+          },
+          "team_name": {
+            "description": "Team name for spawning. Uses current team context if omitted.",
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$"
+          },
+          "mode": {
+            "description": "Permission mode for spawned teammate (e.g., \"plan\" to require plan approval).",
+            "type": "string",
+            "enum": [
+              "acceptEdits",
+              "auto",
+              "bypassPermissions",
+              "default",
+              "dontAsk",
+              "plan"
+            ]
+          },
+          "isolation": {
+            "description": "Isolation mode. \"worktree\" creates a temporary git worktree so the agent works on an isolated copy of the repo.",
+            "type": "string",
+            "enum": [
+              "worktree"
+            ]
+          }
+        },
+        "required": [
+          "description",
+          "prompt"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "AskUserQuestion",
+      "description": "Use this tool only when you are blocked on a decision that is genuinely the user's to make: one you cannot resolve from the request, the code, or sensible defaults.\n\nUsage notes:\n- Users will always be able to select \"Other\" to provide custom text input\n- Use multiSelect: true to allow multiple answers to be selected for a question\n- If you recommend a specific option, make that the first option in the list and add \"(Recommended)\" at the end of the label\n\nPlan mode note: To switch into plan mode, use EnterPlanMode (not this tool). Once in plan mode, use this tool to clarify requirements or choose between approaches BEFORE finalizing your plan. Do NOT use this tool to ask \"Is my plan ready?\", \"Should I proceed?\", or otherwise reference \"the plan\" in questions — the user cannot see the plan until you call ExitPlanMode for approval.\n\nReserve this for decisions where the user's answer changes what you do next — not for choices with a conventional default or facts you can verify in the codebase yourself. In those cases pick the obvious option, mention it in your response, and proceed.\n\nPreview feature:\nUse the optional `preview` field on options when presenting concrete artifacts that users need to visually compare:\n- ASCII mockups of UI layouts or components\n- Code snippets showing different implementations\n- Diagram variations\n- Configuration examples\n\nPreview content is rendered as markdown in a monospace box. Multi-line text with newlines is supported. When any option has a preview, the UI switches to a side-by-side layout with a vertical option list on the left and preview on the right. Do not use previews for simple preference questions where labels and descriptions suffice. Note: previews are only supported for single-select questions (not multiSelect).\n",
+      "input_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "questions": {
+            "description": "Questions to ask the user (1-4 questions)",
+            "minItems": 1,
+            "maxItems": 4,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "question": {
+                  "description": "The complete question to ask the user. Should be clear, specific, and end with a question mark. Example: \"Which library should we use for date formatting?\" If multiSelect is true, phrase it accordingly, e.g. \"Which features do you want to enable?\"",
+                  "type": "string"
+                },
+                "header": {
+                  "description": "Very short label displayed as a chip/tag (max 12 chars). Examples: \"Auth method\", \"Library\", \"Approach\".",
+                  "type": "string"
+                },
+                "options": {
+                  "description": "The available choices for this question. Must have 2-4 options. Each option should be a distinct, mutually exclusive choice (unless multiSelect is enabled). There should be no 'Other' option, that will be provided automatically.",
+                  "minItems": 2,
+                  "maxItems": 4,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "label": {
+                        "description": "The display text for this option that the user will see and select. Should be concise (1-5 words) and clearly describe the choice.",
+                        "type": "string"
+                      },
+                      "description": {
+                        "description": "Explanation of what this option means or what will happen if chosen. Useful for providing context about trade-offs or implications.",
+                        "type": "string"
+                      },
+                      "preview": {
+                        "description": "Optional preview content rendered when this option is focused. Use for mockups, code snippets, or visual comparisons that help users compare options. See the tool description for the expected content format.",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "label",
+                      "description"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "multiSelect": {
+                  "description": "Set to true to allow the user to select multiple options instead of just one. Use when choices are not mutually exclusive.",
+                  "default": false,
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "question",
+                "header",
+                "options",
+                "multiSelect"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "answers": {
+            "description": "User answers collected by the permission component",
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "annotations": {
+            "description": "Optional per-question annotations from the user (e.g., notes on preview selections). Keyed by question text.",
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "preview": {
+                  "description": "The preview content of the selected option, if the question used previews.",
+                  "type": "string"
+                },
+                "notes": {
+                  "description": "Free-text notes the user added to their selection.",
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "metadata": {
+            "description": "Optional metadata for tracking and analytics purposes. Not displayed to user.",
+            "type": "object",
+            "properties": {
+              "source": {
+                "description": "Optional identifier for the source of this question (e.g., \"remember\" for /remember command). Used for analytics tracking.",
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "questions"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "Bash",
+      "description": "Executes a bash command and returns its output.\n\n- Working directory persists between calls, but prefer absolute paths — `cd` in a compound command can trigger a permission prompt. Shell state (env vars, functions) does not persist; the shell is initialized from the user's profile.\n- IMPORTANT: Avoid using this tool to run `cat`, `head`, `tail`, `sed`, `awk`, or `echo` commands, unless explicitly instructed or after you have verified that a dedicated tool cannot accomplish your task. Instead, use the appropriate dedicated tool as this will provide a much better experience for the user.\n- `timeout` is in milliseconds: default 120000, max 600000.\n- `run_in_background` runs the command detached: it keeps running across turns and re-invokes you when it exits. No `&` needed. Foreground `sleep` is blocked; use Monitor with an until-loop to wait on a condition.\n\n# Git\n- Interactive flags (`-i`, e.g. `git rebase -i`, `git add -i`) are not supported in this environment.\n- Use the `gh` CLI for GitHub operations (PRs, issues, API).\n- Commit or push only when the user asks. If on the default branch, branch first.",
+      "input_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "command": {
+            "description": "The command to execute",
+            "type": "string"
+          },
+          "timeout": {
+            "description": "Optional timeout in milliseconds (max 600000)",
+            "type": "number"
+          },
+          "description": {
+            "description": "Clear, concise description of what this command does in active voice. Never use words like \"complex\" or \"risk\" in the description - just describe what it does.\n\nFor simple commands (git, npm, standard CLI tools), keep it brief (5-10 words):\n- ls → \"List files in current directory\"\n- git status → \"Show working tree status\"\n- npm install → \"Install package dependencies\"\n\nFor commands that are harder to parse at a glance (piped commands, obscure flags, etc.), add enough context to clarify what it does:\n- find . -name \"*.tmp\" -exec rm {} \\; → \"Find and delete all .tmp files recursively\"\n- git reset --hard origin/main → \"Discard all local changes and match remote main\"\n- curl -s url | jq '.data[]' → \"Fetch JSON from URL and extract data array elements\"",
+            "type": "string"
+          },
+          "run_in_background": {
+            "description": "Set to true to run this command in the background.",
+            "type": "boolean"
+          },
+          "dangerouslyDisableSandbox": {
+            "description": "Set this to true to dangerously override sandbox mode and run commands without sandboxing.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "command"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "Edit",
+      "description": "Performs exact string replacement in a file.\n\n- You must Read the file in this conversation before editing, or the call will fail.\n- `old_string` must match the file exactly, including indentation, and be unique — the edit fails otherwise. Strip the Read line prefix (line number + tab) before matching.\n- `replace_all: true` replaces every occurrence instead.",
+      "input_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "file_path": {
+            "description": "The absolute path to the file to modify",
+            "type": "string"
+          },
+          "old_string": {
+            "description": "The text to replace",
+            "type": "string"
+          },
+          "new_string": {
+            "description": "The text to replace it with (must be different from old_string)",
+            "type": "string"
+          },
+          "replace_all": {
+            "description": "Replace all occurrences of old_string (default false)",
+            "default": false,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "file_path",
+          "old_string",
+          "new_string"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "Read",
+      "description": "Reads a file from the local filesystem.\n\n- `file_path` must be an absolute path.\n- Reads up to 2000 lines by default.\n- When you already know which part of the file you need, only read that part. This can be important for larger files.\n- Results are returned using cat -n format, with line numbers starting at 1\n- Reads images (PNG, JPG, …) and presents them visually. Reads PDFs via the `pages` parameter (e.g. \"1-5\", max 20 pages/request; required for PDFs over 10 pages). Reads Jupyter notebooks (.ipynb) as cells with outputs.\n- Reading a directory, a missing file, or an empty file returns an error or system reminder rather than content.\n- Do NOT re-read a file you just edited to verify — Edit/Write would have errored if the change failed, and the harness tracks file state for you.",
+      "input_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "file_path": {
+            "description": "The absolute path to the file to read",
+            "type": "string"
+          },
+          "offset": {
+            "description": "The line number to start reading from. Only provide if the file is too large to read at once",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "limit": {
+            "description": "The number of lines to read. Only provide if the file is too large to read at once.",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pages": {
+            "description": "Page range for PDF files (e.g., \"1-5\", \"3\", \"10-20\"). Only applicable to PDF files. Maximum 20 pages per request.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file_path"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "ScheduleWakeup",
+      "description": "Schedule when to resume work in /loop dynamic mode — the user invoked /loop without an interval, asking you to self-pace iterations of a specific task.\n\nDo NOT schedule a short-interval wakeup to poll for background work you started — when harness-tracked work finishes, you are re-invoked automatically, so polling is wasted. Instead schedule a long fallback (1200s+) so the loop survives if the work hangs or never notifies. The exception is external work the harness cannot track (a CI run, a deploy, a remote queue) — there, pick a delay matched to how fast that state actually changes.\n\nPass the same /loop prompt back via `prompt` each turn so the next firing repeats the task. For an autonomous /loop (no user prompt), pass the literal sentinel `<<autonomous-loop-dynamic>>` as `prompt` instead — the runtime resolves it back to the autonomous-loop instructions at fire time. (There is a similar `<<autonomous-loop>>` sentinel for CronCreate-based autonomous loops; do not confuse the two — ScheduleWakeup always uses the `-dynamic` variant.) Omit the call to end the loop.\n\n## Picking delaySeconds\n\nThe Anthropic prompt cache has a 5-minute TTL. Sleeping past 300 seconds means the next wake-up reads your full conversation context uncached — slower and more expensive. So the natural breakpoints:\n\n- **Under 5 minutes (60s–270s)**: cache stays warm. Right for actively polling external state the harness can't notify you about — a CI run, a deploy, a remote queue.\n- **5 minutes to 1 hour (300s–3600s)**: pay the cache miss. Right when there's no point checking sooner — waiting on something that takes minutes to change, genuinely idle, or as the long fallback heartbeat when something else is the primary wake signal.\n\n**Don't pick 300s.** It's the worst-of-both: you pay the cache miss without amortizing it. If you're tempted to \"wait 5 minutes,\" either drop to 270s (stay in cache) or commit to 1200s+ (one cache miss buys a much longer wait). Don't think in round-number minutes — think in cache windows.\n\nFor idle ticks with no specific signal to watch, default to **1200s–1800s** (20–30 min). The loop checks back, you don't burn cache 12× per hour for nothing, and the user can always interrupt if they need you sooner.\n\nThink about what you're actually waiting for, not just \"how long should I sleep.\" If you're polling a CI run that takes ~8 minutes, sleeping 60s burns the cache 8 times before it finishes — sleep ~270s twice instead.\n\nThe runtime clamps to [60, 3600], so you don't need to clamp yourself.\n\n## The reason field\n\nOne short sentence on what you chose and why. Goes to telemetry and is shown back to the user. \"watching CI run\" beats \"waiting.\" The user reads this to understand what you're doing without having to predict your cadence in advance — make it specific.\n",
+      "input_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "delaySeconds": {
+            "description": "Seconds from now to wake up. Clamped to [60, 3600] by the runtime.",
+            "type": "number"
+          },
+          "reason": {
+            "description": "One short sentence explaining the chosen delay. Goes to telemetry and is shown to the user. Be specific.",
+            "type": "string"
+          },
+          "prompt": {
+            "description": "The /loop input to fire on wake-up. Pass the same /loop input verbatim each turn so the next firing re-enters the skill and continues the loop. For autonomous /loop (no user prompt), pass the literal sentinel `<<autonomous-loop-dynamic>>` instead (the dynamic-pacing variant, not the CronCreate-mode `<<autonomous-loop>>`).",
+            "type": "string"
+          }
+        },
+        "required": [
+          "delaySeconds",
+          "reason",
+          "prompt"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "Skill",
+      "description": "Execute a skill within the main conversation\n\nWhen users ask you to perform tasks, check if any of the available skills match. Skills provide specialized capabilities and domain knowledge.\n\nWhen users reference a \"slash command\" or \"/<something>\", they are referring to a skill. Use this tool to invoke it.\n\nHow to invoke:\n- Set `skill` to the exact name of an available skill (no leading slash). For plugin-namespaced skills use the fully qualified `plugin:skill` form.\n- Set `args` to pass optional arguments.\n\nImportant:\n- Available skills are listed in system-reminder messages in the conversation\n- Only invoke a skill that appears in that list, or one the user explicitly typed as `/<name>` in their message. Never guess or invent a skill name from training data; otherwise do not call this tool\n- When a skill matches the user's request, this is a BLOCKING REQUIREMENT: invoke the relevant Skill tool BEFORE generating any other response about the task\n- NEVER mention a skill without actually calling this tool\n- Do not invoke a skill that is already running\n- Do not use this tool for built-in CLI commands (like /help, /clear, etc.)\n- If you see a <command-name> tag in the current conversation turn, the skill has ALREADY been loaded - follow the instructions directly instead of calling this tool again\n",
+      "input_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "skill": {
+            "description": "The name of a skill from the available-skills list. Do not guess names.",
+            "type": "string"
+          },
+          "args": {
+            "description": "Optional arguments for the skill",
+            "type": "string"
+          }
+        },
+        "required": [
+          "skill"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "ToolSearch",
+      "description": "Fetches full schema definitions for deferred tools so they can be called.\n\nDeferred tools appear by name in <system-reminder> messages. Until fetched, only the name is known — there is no parameter schema, so the tool cannot be invoked. This tool takes a query, matches it against the deferred tool list, and returns the matched tools' complete JSONSchema definitions inside a <functions> block. Once a tool's schema appears in that result, it is callable exactly like any tool defined at the top of the prompt.\n\nResult format: each matched tool appears as one <function>{\"description\": \"...\", \"name\": \"...\", \"parameters\": {...}}</function> line inside the <functions> block — the same encoding as the tool list at the top of this prompt.\n\nQuery forms:\n- \"select:Read,Edit,Grep\" — fetch these exact tools by name\n- \"notebook jupyter\" — keyword search, up to max_results best matches\n- \"+slack send\" — require \"slack\" in the name, rank by remaining terms",
+      "input_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "query": {
+            "description": "Query to find deferred tools. Use \"select:<tool_name>\" for direct selection, or keywords to search.",
+            "type": "string"
+          },
+          "max_results": {
+            "description": "Maximum number of results to return (default: 5)",
+            "default": 5,
+            "type": "number"
+          }
+        },
+        "required": [
+          "query",
+          "max_results"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "Workflow",
+      "description": "Execute a workflow script that orchestrates multiple subagents deterministically. Workflows run in the background — this tool returns immediately with a task ID, and a <task-notification> arrives when the workflow completes. Use /workflows to watch live progress.\n\nA workflow structures work across many agents — to be comprehensive (decompose and cover in parallel), to be confident (independent perspectives and adversarial checks before committing), or to take on scale one context can't hold (migrations, audits, broad sweeps). The script is where you encode that structure: what fans out, what verifies, what synthesizes.\n\nONLY call this tool when the user has explicitly opted into multi-agent orchestration. Workflows can spawn dozens of agents and consume a large amount of tokens; the user must request that scale, not have it inferred. Explicit opt-in means one of:\n- The user included the keyword \"ultracode\" in their prompt (you'll see a system-reminder confirming it).\n- Ultracode is on for the session (a system-reminder confirms it) — see **Ultracode** below.\n- The user directly asked you to run a workflow or use multi-agent orchestration in their own words (\"use a workflow\", \"run a workflow\", \"fan out agents\", \"orchestrate this with subagents\"). The ask must be in the user's words — a task that would merely benefit from a workflow does not count.\n- The user invoked a skill or slash command whose instructions tell you to call Workflow.\n- The user asked you to run a specific named or saved workflow.\n\nFor any other task — even one that would clearly benefit from parallelism — do NOT call this tool. Use the Agent tool for individual subagents, or briefly describe what a multi-agent workflow could do and how much it would roughly cost, and ask the user whether to run it. Mention they can ask for one with \"use a workflow\" in a future message to skip the ask.\n\nWhen you do call it, the right move is often **hybrid**: scout inline first (list the files, find the channels, scope the diff) to discover the work-list, then call Workflow to pipeline over it. You don't need to know the shape before the *task* — only before the *orchestration step*.\n\nCommon single-phase workflows you can chain across turns:\n- **Understand** — parallel readers over relevant subsystems → structured map\n- **Design** — judge panel of N independent approaches → scored synthesis\n- **Review** — dimensions → find → adversarially verify (example below)\n- **Research** — multi-modal sweep → deep-read → synthesize\n- **Migrate** — discover sites → transform each (worktree isolation) → verify\n\nFor larger work, run several in sequence — read each result before deciding the next phase. You stay in the loop; each workflow is one well-scoped fan-out.\n\n**Ultracode.** When a system-reminder confirms ultracode is on, that opt-in is standing: author and run a workflow for every substantive task by default. The goal is the most exhaustive, correct answer you can produce — token cost is not a constraint. For multi-phase work (understand → design → implement → review), that often means several workflows in sequence — one per phase — so you stay in the loop between them. The quality patterns below (adversarial verify, multi-modal sweep, completeness critic, loop-until-dry) are the tools; pick what fits the task. Lean toward orchestrating with workflows and adversarially verifying your findings — unless the work is trivial or already verified. Solo only on conversational turns or trivial mechanical edits. When a reminder says ultracode is off, revert to the opt-in rule above.\n\nPass the script inline via `script` — do not Write it to a file first. Every invocation automatically persists its script to a file under the session directory and returns the path in the tool result. To iterate on a workflow, edit that file with Write/Edit and re-invoke Workflow with `{scriptPath: \"<path>\"}` instead of resending the full script.\n\nEvery script must begin with `export const meta = {...}`:\n  export const meta = {\n    name: 'find-flaky-tests',\n    description: 'Find flaky tests and propose fixes',   // one-line, shown in permission dialog\n    phases: [                                            // one entry per phase() call\n      { title: 'Scan', detail: 'grep test logs for retries' },\n      { title: 'Fix', detail: 'one agent per flaky test' },\n    ],\n  }\n  // script body starts here — use agent()/parallel()/pipeline()/phase()/log()\n  phase('Scan')\n  const flaky = await agent('grep CI logs for retry markers', {schema: FLAKY_SCHEMA})\n  ...\n\nThe `meta` object must be a PURE LITERAL — no variables, function calls, spreads, or template interpolation. Required fields: `name`, `description`. Optional: `whenToUse` (shown in the workflow list), `phases`. Use the SAME phase titles in meta.phases as in phase() calls — titles are matched exactly; a phase() call with no matching meta entry just gets its own progress group. Add `model` to a phase entry when that phase uses a specific model override.\n\nScript body hooks:\n- agent(prompt: string, opts?: {label?: string, phase?: string, schema?: object, model?: string, isolation?: 'worktree', agentType?: string}): Promise<any> — spawn a subagent. Without schema, returns its final text as a string. With schema (a JSON Schema), the subagent is forced to call a StructuredOutput tool and agent() returns the validated object — no parsing needed. Returns null if the user skips the agent mid-run or the subagent dies on a terminal API error after retries (filter with .filter(Boolean)). opts.label overrides the display label. opts.phase explicitly assigns this agent to a progress group (use this inside pipeline()/parallel() stages to avoid races on the global phase() state — same phase string → same group box). opts.model overrides the model for this agent call. Default to omitting it — the agent inherits the main-loop model (the resolved session model), which is almost always correct. Only set it when you're highly confident a different tier fits the task; when unsure, omit. opts.isolation: 'worktree' runs the agent in a fresh git worktree — EXPENSIVE (~200-500ms setup + disk per agent), use ONLY when agents mutate files in parallel and would otherwise conflict; the worktree is auto-removed if unchanged. opts.agentType uses a custom subagent type (e.g. 'Explore', 'code-reviewer') instead of the default workflow subagent — resolved from the same registry as the Agent tool; composes with schema (the custom agent's system prompt gets a StructuredOutput instruction appended).\n- pipeline(items, stage1, stage2, ...): Promise<any[]> — run each item through all stages independently, NO barrier between stages. Item A can be in stage 3 while item B is still in stage 1. This is the DEFAULT for multi-stage work. Wall-clock = slowest single-item chain, not sum-of-slowest-per-stage. Every stage callback receives (prevResult, originalItem, index) — use originalItem/index in later stages to label work without threading context through stage 1's return value. A stage that throws drops that item to `null` and skips its remaining stages.\n- parallel(thunks: Array<() => Promise<any>>): Promise<any[]> — run tasks concurrently. This is a BARRIER: awaits all thunks before returning. A thunk that throws (or whose agent errors) resolves to `null` in the result array — the call itself never rejects, so `.filter(Boolean)` before using the results. Use ONLY when you genuinely need all results together.\n- log(message: string): void — emit a progress message to the user (shown as a narrator line above the progress tree)\n- phase(title: string): void — start a new phase; subsequent agent() calls are grouped under this title in the progress display\n- args: any — the value passed as Workflow's `args` input, verbatim (undefined if not provided). Pass arrays/objects as actual JSON values in the tool call, NOT as a JSON-encoded string — `args: [\"a.ts\", \"b.ts\"]`, not `args: \"[\\\"a.ts\\\", ...]\"` (a stringified list reaches the script as one string, so `args.filter`/`args.map` throw). Use this to parameterize named workflows — e.g. pass a research question, target path, or config object directly instead of via a side-channel file.\n- budget: {total: number|null, spent(): number, remaining(): number} — the turn's token target from the user's \"+500k\"-style directive. `budget.total` is null if no target was set. `budget.spent()` returns output tokens spent this turn across the main loop and all workflows — the pool is shared, not per-workflow. `budget.remaining()` returns `max(0, total - spent())`, or `Infinity` if no target. The target is a HARD ceiling, not advisory: once `spent()` reaches `total`, further `agent()` calls throw. Use for dynamic loops: `while (budget.total && budget.remaining() > 50_000) { ... }`, or static scaling: `const FLEET = budget.total ? Math.floor(budget.total / 100_000) : 5`.\n- workflow(nameOrRef: string | {scriptPath: string}, args?: any): Promise<any> — run another workflow inline as a sub-step and return whatever it returns. Pass a name to invoke a saved workflow (same registry as {name: \"...\"}), or {scriptPath} to run a script file you Wrote earlier. The child shares this run's concurrency cap, agent counter, abort signal, and token budget — its agents appear under a \"▸ name\" group in /workflows and its tokens count toward budget.spent(). The args param becomes the child's `args` global. Nesting is one level only: workflow() inside a child throws. Throws on unknown name / unreadable scriptPath / child syntax error; catch to handle gracefully.\n\nSubagents are told their final text IS the return value (not a human-facing message), so they return raw data. For structured output, use the schema option — validation happens at the tool-call layer so the model retries on mismatch.\n\nWorkflow agents can reach all session-connected MCP tools via ToolSearch — schemas load on demand per agent. Caveat: interactively-authenticated MCP servers (e.g. claude.ai) may be absent in headless/cron runs.\n\nScripts are plain JavaScript, NOT TypeScript — type annotations (`: string[]`), interfaces, and generics fail to parse. The script body runs in an async context — use await directly. Standard JS built-ins (JSON, Math, Array, etc.) are available — EXCEPT `Date.now()`/`Math.random()`/argless `new Date()`, which throw (they would break resume); pass timestamps in via `args`, stamp results after the workflow returns, and for randomness vary the agent prompt/label by index. No filesystem or Node.js API access.\n\nDEFAULT TO pipeline(). Only reach for a barrier (parallel between stages) when you genuinely need ALL prior-stage results together.\n\nA barrier is correct ONLY when stage N needs cross-item context from all of stage N-1:\n- Dedup/merge across the full result set before expensive downstream work\n- Early-exit if the total count is zero (\"0 bugs found → skip verification entirely\")\n- Stage N's prompt references \"the other findings\" for comparison\n\nA barrier is NOT justified by:\n- \"I need to flatten/map/filter first\" — do it inside a pipeline stage: pipeline(items, stageA, r => transform([r]).flat(), stageB)\n- \"The stages are conceptually separate\" — that's what pipeline() models. Separate stages ≠ synchronized stages.\n- \"It's cleaner code\" — barrier latency is real. If 5 finders run and the slowest takes 3× the fastest, a barrier wastes 2/3 of the fast finders' idle time.\n\nSmell test: if you wrote\n  const a = await parallel(...)\n  const b = transform(a)        // flatten, map, filter — no cross-item dependency\n  const c = await parallel(b.map(...))\nthat middle transform doesn't need the barrier. Rewrite as a pipeline with the transform inside a stage. When in doubt: pipeline.\n\nConcurrent agent() calls are capped at min(16, cpu cores - 2) per workflow — excess calls queue and run as slots free up. You can still pass 100 items to parallel()/pipeline() and they all complete; only ~10 run at any moment. Total agent count across a workflow's lifetime is capped at 1000 — a runaway-loop backstop set far above any real workflow. A single parallel()/pipeline() call accepts at most 4096 items; passing more is an explicit error, not a silent truncation.\n\nThe canonical multi-stage pattern — pipeline by default, each dimension verifies as soon as its review completes:\n  export const meta = {\n    name: 'review-changes',\n    description: 'Review changed files across dimensions, verify each finding',\n    phases: [{ title: 'Review' }, { title: 'Verify' }],\n  }\n  const DIMENSIONS = [{key: 'bugs', prompt: '...'}, {key: 'perf', prompt: '...'}]\n  const results = await pipeline(\n    DIMENSIONS,\n    d => agent(d.prompt, {label: `review:${d.key}`, phase: 'Review', schema: FINDINGS_SCHEMA}),\n    review => parallel(review.findings.map(f => () =>\n      agent(`Adversarially verify: ${f.title}`, {label: `verify:${f.file}`, phase: 'Verify', schema: VERDICT_SCHEMA})\n        .then(v => ({...f, verdict: v}))\n    ))\n  )\n  const confirmed = results.flat().filter(Boolean).filter(f => f.verdict?.isReal)\n  return { confirmed }\n  // Dimension 'bugs' findings verify while dimension 'perf' is still reviewing. No wasted wall-clock.\n\nWhen a barrier IS correct — dedup across all findings before expensive verification:\n  const all = await parallel(DIMENSIONS.map(d => () => agent(d.prompt, {schema: FINDINGS_SCHEMA})))\n  const deduped = dedupeByFileAndLine(all.filter(Boolean).flatMap(r => r.findings))  // <-- genuinely needs ALL at once\n  const verified = await parallel(deduped.map(f => () => agent(verifyPrompt(f), {schema: VERDICT_SCHEMA})))\n\nLoop-until-count pattern — accumulate to a target:\n  const bugs = []\n  while (bugs.length < 10) {\n    const result = await agent(\"Find bugs in this codebase.\", {schema: BUGS_SCHEMA})\n    bugs.push(...result.bugs)\n    log(`${bugs.length}/10 found`)\n  }\n\nLoop-until-budget pattern — scale depth to the user's \"+500k\" directive. Guard on budget.total: with no target set, remaining() is Infinity and the loop would run straight to the 1000-agent cap.\n  const bugs = []\n  while (budget.total && budget.remaining() > 50_000) {\n    const result = await agent(\"Find bugs in this codebase.\", {schema: BUGS_SCHEMA})\n    bugs.push(...result.bugs)\n    log(`${bugs.length} found, ${Math.round(budget.remaining()/1000)}k remaining`)\n  }\n\nComposing patterns — exhaustive review (find → dedup vs seen → diverse-lens panel → loop-until-dry):\n  const seen = new Set(), confirmed = []\n  let dry = 0\n  while (dry < 2) {                                              // loop-until-dry\n    const found = (await parallel(FINDERS.map(f => () =>          // barrier: collect all finders this round\n      agent(f.prompt, {phase: 'Find', schema: BUGS})))).filter(Boolean).flatMap(r => r.bugs)\n    const fresh = found.filter(b => !seen.has(key(b)))           // dedup vs ALL seen — plain code, not an agent\n    if (!fresh.length) { dry++; continue }\n    dry = 0; fresh.forEach(b => seen.add(key(b)))\n    const judged = await parallel(fresh.map(b => () =>           // every fresh bug judged concurrently...\n      parallel(['correctness','security','repro'].map(lens => () =>   // ...each by 3 distinct lenses\n        agent(`Judge \"${b.desc}\" via the ${lens} lens — real?`, {phase: 'Verify', schema: VERDICT})))\n        .then(vs => ({ b, real: vs.filter(Boolean).filter(v => v.real).length >= 2 }))))\n    confirmed.push(...judged.filter(v => v.real).map(v => v.b))\n  }\n  return confirmed\n  // dedup vs `seen`, NOT `confirmed` — else judge-rejected findings reappear every round and it never converges.\n\nQuality patterns — common shapes; pick by task and compose freely:\n- Adversarial verify: spawn N independent skeptics per finding, each prompted to REFUTE. Kill if ≥majority refute. Prevents plausible-but-wrong findings from surviving.\n    const votes = await parallel(Array.from({length: 3}, () => () =>\n      agent(`Try to refute: ${claim}. Default to refuted=true if uncertain.`, {schema: VERDICT})))\n    const survives = votes.filter(Boolean).filter(v => !v.refuted).length >= 2\n- Perspective-diverse verify: when a finding can fail in more than one way, give each verifier a distinct lens (correctness, security, perf, does-it-reproduce) instead of N identical refuters — diversity catches failure modes redundancy can't.\n- Judge panel: generate N independent attempts from different angles (e.g. MVP-first, risk-first, user-first), score with parallel judges, synthesize from the winner while grafting the best ideas from runners-up. Beats one-attempt-iterated when the solution space is wide.\n- Loop-until-dry: for unknown-size discovery (bugs, issues, edge cases), keep spawning finders until K consecutive rounds return nothing new. Simple counters (while count < N) miss the tail.\n- Multi-modal sweep: parallel agents each searching a different way (by-container, by-content, by-entity, by-time). Each is blind to what the others surface; useful when one search angle won't find everything.\n- Completeness critic: a final agent that asks \"what's missing — modality not run, claim unverified, source unread?\" What it finds becomes the next round of work.\n- No silent caps: if a workflow bounds coverage (top-N, no-retry, sampling), `log()` what was dropped — silent truncation reads as \"covered everything\" when it didn't.\n\nScale to what the user asked for. \"find any bugs\" → a few finders, single-vote verify. \"thoroughly audit this\" or \"be comprehensive\" → larger finder pool, 3–5 vote adversarial pass, synthesis stage. When unsure, lean toward thoroughness for research/review/audit requests and toward brevity for quick checks.\n\nThese patterns aren't exhaustive — compose novel harnesses when the task calls for it (tournament brackets, self-repair loops, staged escalation, whatever fits).\n\nUse this tool for multi-step orchestration where control flow should be deterministic (loops, conditionals, fan-out) rather than model-driven.\n\n## Resume\n\nThe tool result includes a runId. To resume after a pause, kill, or script edit, relaunch with Workflow({scriptPath, resumeFromRunId}) — the longest unchanged prefix of agent() calls returns cached results instantly; the first edited/new call and everything after it runs live. Same script + same args → 100% cache hit. Date.now()/Math.random()/new Date() are unavailable in scripts (they would break this) — stamp results after the workflow returns, or pass timestamps via args. Fallback when no journal is available: Read agent-<id>.jsonl files in the transcript directory and hand-author a continuation script.",
+      "input_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "script": {
+            "description": "Self-contained workflow script. Must begin with `export const meta = { name, description, phases }` (pure literal, no computed values) followed by the script body using agent()/parallel()/pipeline()/phase().",
+            "type": "string",
+            "maxLength": 524288
+          },
+          "name": {
+            "description": "Name of a predefined workflow (built-in or from .claude/workflows/). Resolves to a self-contained script.",
+            "type": "string"
+          },
+          "description": {
+            "description": "Ignored — set the workflow description in the script's `meta` block.",
+            "type": "string"
+          },
+          "title": {
+            "description": "Ignored — set the workflow title in the script's `meta` block.",
+            "type": "string"
+          },
+          "args": {
+            "description": "Optional input value exposed to the script as the global `args`, verbatim. Pass arrays/objects as actual JSON values, NOT as a JSON-encoded string — a stringified list breaks `args.filter`/`args.map` in the script. Use for parameterized named workflows (e.g. a research question)."
+          },
+          "scriptPath": {
+            "description": "Path to a workflow script file on disk. Every Workflow invocation persists its script under the session directory and returns the path in the tool result. To iterate, edit that file with Write/Edit and re-invoke Workflow with the same `scriptPath` instead of re-sending the full script. Takes precedence over `script` and `name`.",
+            "type": "string"
+          },
+          "resumeFromRunId": {
+            "description": "Run ID of a prior Workflow invocation to resume from. Completed agent() calls with unchanged (prompt, opts) return their cached results instantly; only edited or new calls re-run. Same-session only. Stop the prior run first (TaskStop) before resuming.",
+            "type": "string",
+            "pattern": "^wf_[a-z0-9-]{6,}$"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "Write",
+      "description": "Writes a file to the local filesystem, overwriting if one exists.\n\nWhen to use: creating a new file, or fully replacing one you've already Read. Overwriting an existing file you haven't Read will fail. For partial changes, use Edit instead.",
+      "input_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "file_path": {
+            "description": "The absolute path to the file to write (must be absolute, not relative)",
+            "type": "string"
+          },
+          "content": {
+            "description": "The content to write to the file",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file_path",
+          "content"
+        ],
+        "additionalProperties": false
+      }
+    }
+  ],
+  "metadata": {
+    "user_id": "{\"device_id\":\"58b9b0bc0b209774f055339b0abe05f50ab64bbd6fa1900a865fe0b6c38d11f5\",\"account_uuid\":\"\",\"session_id\":\"16d924df-25c3-40f4-9d83-26fcbde1cfed\"}"
+  },
+  "max_tokens": 64000,
+  "thinking": {
+    "type": "adaptive"
+  },
+  "context_management": {
+    "edits": [
+      {
+        "type": "clear_thinking_20251015",
+        "keep": "all"
+      }
+    ]
+  },
+  "output_config": {
+    "effort": "high"
+  },
+  "stream": true
+}

@@ -491,15 +491,14 @@ bindDrop("#page-req", reqInput, doParse);
 $("#reqParseBtn").onclick = doParse;
 $("#reqFileBtn").onclick = () => $("#reqFile").click();
 $("#reqFile").onchange = e => { const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>{reqInput.value=r.result;reqInput.dispatchEvent(new Event("input"));doParse();}; r.readAsText(f); };
-$("#reqSampleBtn").onclick = () => {
-  reqInput.value = JSON.stringify({
-    model:"claude-opus-4-8", max_tokens:16000, stream:true,
-    thinking:{type:"adaptive"},
-    output_config:{effort:"high"},
-    system:[{type:"text",text:"You are a helpful assistant.",cache_control:{type:"ephemeral"}}],
-    tools:[{name:"get_weather",description:"Get current weather for a city",input_schema:{type:"object",properties:{city:{type:"string"}},required:["city"]}}],
-    messages:[{role:"user",content:"北京今天天气怎么样？"}]
-  }, null, 2);
+$("#reqSampleBtn").onclick = async () => {
+  try {
+    const res = await fetch("example.json");
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    reqInput.value = await res.text();
+  } catch (e) {
+    reqInput.value = "示例加载失败：" + e.message;
+  }
   reqInput.dispatchEvent(new Event("input")); doParse();
 };
 
